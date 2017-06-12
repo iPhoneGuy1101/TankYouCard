@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Thank you</title>
+	<link rel='apple-touch-icon' href='favicon.png' />
+	<meta name="msapplication-square70x70logo" content="favicon.png" />
+	<meta name="msapplication-square150x150logo" content="favicon.png" />
+	<meta name="msapplication-wide310x150logo" content="favicon.png" />
+	<meta name="msapplication-square310x310logo" content="favicon.png" />
+	<link rel='favicon' href='favicon.png' />
+	<link rel='shortcut icon' href='favicon.png' />
+	<link rel='icon' href='favicon.png' />
+	<style>
+	*{padding:0;margin:0;overflow:hidden;};
+	</style>
+</head>
+<body>
+<canvas>
+	<h1>Hey! I see you are a bit outdated! Try installing <a href='http://chrome.com'>Chrome</a> or <a href='http://firefox.com'>Firefox</a>.
+</canvas>
+<script>
+	var thankyou = function(text, amount, canvas){
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		this.c = canvas;
+		this.ctx = this.c.getContext('2d');
+		this.text = text || ""; if(this.text == "") throw "Error: No text to display";
+		this.amountOfBalloons = amount || 64;
+		this.balloons = new Array(this.amountOfBalloons);
+		for(var i = 0; i<this.balloons.length; i++) {
+			this.balloons[i] = new this.balloon('#'+Math.random().toString(16).substr(2,6), Math.random()*canvas.width, this.c.height + Math.random()*1024);
+		}
+		this.run();
+	};
+	thankyou.prototype.run = function(){
+		this.c.width = window.innerWidth;
+		this.c.height = window.innerHeight;
+		this.ctx.clearRect(0,0,this.c.width,this.c.height)
+		for (var i = this.balloons.length - 1; i >= 0; i--) {
+			this.balloons[i].show(this.ctx);
+		};
+		this.ctx.fillStyle='white';
+		this.ctx.strokeStyle='black';
+		this.ctx.lineWidth = 2;
+		this.ctx.fillRect(48,128-((window.innerHeight+window.innerWidth)/2)/10,(this.text.length)*((window.innerHeight+window.innerWidth)/2)/100,(this.text.split("/n").length+1)*((window.innerHeight+window.innerWidth)/2)/10);
+		this.ctx.strokeRect(48,128-((window.innerHeight+window.innerWidth)/2)/10,(this.text.length)*((window.innerHeight+window.innerWidth)/2)/100,(this.text.split("/n").length+1)*((window.innerHeight+window.innerWidth)/2)/10);
+		this.ctx.font = ((window.innerHeight+window.innerWidth)/2)/10+"px Comic Sans";
+		for(var y = 0; y < this.text.split("/n").length; y++){
+			this.ctx.fillStyle=y==0?'#000':'#555'
+			this.ctx.fillText(this.text.split("/n")[y], 64, 128+(y*(((window.innerHeight+window.innerWidth)/2)/10)));
+		}
+		setTimeout(this.run.bind(this), 1000/50);
+	};
+	thankyou.prototype.balloon = function(color, x, y){
+		this.velY = Math.random()*3;
+		this.velX = Math.random()*2-1;
+		this.color = color || "#0099FF";
+		this.x = x || 0;
+		this.y = y || 0;
+		this.radius = Math.random() * 16 + 48;
+	};
+	thankyou.prototype.balloon.prototype.show = function(c) {
+		this.y-=this.velY;
+		this.x+=this.velX;
+		this.velX -= 0.025;
+		this.velY += 0.035;
+		if(this.y < -72 || this.x < -72) {
+			this.y = c.canvas.height + Math.random()*256;
+			this.velY = Math.random()*3;
+			this.velX = Math.random()*2-1;
+			this.x = Math.random()*c.canvas.width
+		}
+		c.beginPath();
+		c.moveTo(this.x, this.y);
+		c.lineTo(this.x/4, c.canvas.height);
+		c.strokeStyle='black';
+		c.lineWidth=0.3;
+		c.stroke();
+		c.closePath();
+		c.beginPath();
+		c.fillStyle=this.color;
+		c.arc(this.x,this.y,this.radius,0,Math.PI*2,false);
+		c.fill();
+		c.closePath();
+	};
+	var msg = decodeURI(document.location.href.split("?")[1])
+	var thanks = new thankyou(msg, 512, document.getElementsByTagName('canvas')[0]);
+</script>
+</body>
+</html>
